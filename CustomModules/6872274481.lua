@@ -9121,7 +9121,7 @@ run(function()
     -- idk if it works ill update in updates
 																																																																
     local InstantWin = {Enabled = false}
-    InstantWin = GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+    InstantWin = GuiLibrary.ObjectsThatCanBeSaved.ComplexwareWindow.Api.CreateOptionsButton({
         Name = "InstantWin",
         Callback = function(state)
             InstantWin.Enabled = state
@@ -9153,7 +9153,7 @@ run(function()
     bedwars.Client:Get(bedwars.PickupItemDropRemote):SendToServer()
 
     local BountyExploit = {Enabled = false}
-    BountyExploit = GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+    BountyExploit = GuiLibrary.ObjectsThatCanBeSaved.ComplexwareWindow.Api.CreateOptionsButton({
         Name = "ExcaliburBountyExploit",
         Callback = function(state)
             BountyExploit.Enabled = state
@@ -9162,7 +9162,7 @@ run(function()
 end)		
 
 run(function()
-	InfiniteJump = GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+	InfiniteJump = GuiLibrary.ObjectsThatCanBeSaved.ComplexwareWindow.Api.CreateOptionsButton({
 		Name = "InfiniteJump",
 		Function = function(callback)
 			if callback then
@@ -9181,7 +9181,7 @@ end)
 
 
 runFunction(function()
-    AntiBan = GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+    AntiBan = GuiLibrary.ObjectsThatCanBeSaved.ComplexwareWindow.Api.CreateOptionsButton({
         Name = "BetterAutoLeave",
         Function = function(callback)
             if callback then
@@ -9207,7 +9207,7 @@ runFunction(function()
 end)		
 
 													
-GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+GuiLibrary.ObjectsThatCanBeSaved.ComplexwareWindow.Api.CreateOptionsButton({
         Name = "BedTP",
         Function = function(callback)
             if callback then
@@ -9224,7 +9224,7 @@ GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
     })
 end)
 																																																																																																						
-GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+GuiLibrary.ObjectsThatCanBeSaved.ComplexwareWindow.Api.CreateOptionsButton({
         Name = "PlayerTP",
         Function = function(callback)
             if callback then
@@ -9249,14 +9249,14 @@ local Reinject = {["Enabled"] = false}
                ["Function"] = function(Callback)
                     Enabled = Callback
                     if Enabled then
-                      warningNotification("Forplex", "Reinjecting..", 3)
+                      warningNotification("Complexware", "Reinjecting..", 3)
                         Reinject["ToggleButton"](false)
                         GuiLibrary["SelfDestruct"]()
-                        loadstring(game:HttpGet("https://raw.githubusercontent.com/complexwaremain/ForplexForVapeV4/main/NewMainScript.lua", true))()	
+                        loadstring(game:HttpGet("https://raw.githubusercontent.com/complexwaremain/ComplexwareForVapeV4/main/NewMainScript.lua", true))()	
 
 local skidDetected = {}
 runFunction(function()
-    SkidDetector = GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+    SkidDetector = GuiLibrary.ObjectsThatCanBeSaved.ComplexwareWindow.Api.CreateOptionsButton({
         Name = "SkidDetector",
         Function = function(callback)
             if callback then
@@ -9286,7 +9286,7 @@ end)
 run(function() -- credits to idk someone gave it to me
 	local MelodyExploit = {Enabled = false}
 
-	MelodyExploit = GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+	MelodyExploit = GuiLibrary.ObjectsThatCanBeSaved.ComplexwareWindow.Api.CreateOptionsButton({
 		Name = "AutoHeal",
 		Function = function(callback)
 			if callback then
