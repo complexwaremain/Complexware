@@ -9118,24 +9118,6 @@ task.spawn(function()
 end)
 
 run(function()
-    -- idk if it works ill update in updates
-																																																																
-    local InstantWin = {Enabled = false}
-    InstantWin = GuiLibrary.ObjectsThatCanBeSaved.ComplexwareWindow.Api.CreateOptionsButton({
-        Name = "InstantWin",
-        Callback = function(state)
-            InstantWin.Enabled = state
-            if state then
-                -- why do i always use this thing
-                bedwars.Client:Get(bedwars.MatchEndEventRemote):SendToServer()
-                -- w script
-                game:GetService("ReplicatedStorage").rbxts_include.node_modules["@rbxts"].net.out._NetManaged.MatchEndEvent:FireServer()
-            end
-        end
-    })
-end)
-
-run(function()
     local args = {
         [1] = {
             ["excalibur"] = workspace.excalibur
