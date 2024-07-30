@@ -9160,3 +9160,317 @@ run(function()
 		end
 	end)         
 end)			
+
+local Fly = {Enabled = false}
+local FlyMode = {Value = "CFrame"}
+local FlyVerticalSpeed = {Value = 40}
+local FlyVertical = {Enabled = true}
+local FlyAutoPop = {Enabled = true}
+local FlyAnyway = {Enabled = false}
+local FlyAnywayProgressBar = {Enabled = false}
+local FlyDamageAnimation = {Enabled = false}
+local FlyTP = {Enabled = false}
+local FlyAnywayProgressBarFrame
+local olddeflate
+local FlyUp = false
+local FlyDown = false
+local FlyCoroutine
+local groundtime = tick()
+local onground = false
+local lastonground = false
+local alternatelist = {"Normal", "AntiCheat A", "AntiCheat B"}
+
+local function inflateBalloon()
+    if not Fly.Enabled then return end
+    if entityLibrary.isAlive and (lplr.Character:GetAttribute("InflatedBalloons") or 0) < 1 then
+        autobankballoon = true
+        if getItem("balloon") then
+            bedwars.BalloonController:inflateBalloon()
+            return true
+        end
+    end
+    return false
+end
+
+Fly = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+    Name = "FastFly",
+    Function = function(callback)
+        if callback then
+            olddeflate = bedwars.BalloonController.deflateBalloon
+            bedwars.BalloonController.deflateBalloon = function() end
+
+            table.insert(Fly.Connections, inputService.InputBegan:Connect(function(input1)
+                if FlyVertical.Enabled and inputService:GetFocusedTextBox() == nil then
+                    if input1.KeyCode == Enum.KeyCode.Space or input1.KeyCode == Enum.KeyCode.ButtonA then
+                        FlyUp = true
+                    end
+                    if input1.KeyCode == Enum.KeyCode.LeftShift or input1.KeyCode == Enum.KeyCode.ButtonL2 then
+                        FlyDown = true
+                    end
+                end
+            end))
+            table.insert(Fly.Connections, inputService.InputEnded:Connect(function(input1)
+                if input1.KeyCode == Enum.KeyCode.Space or input1.KeyCode == Enum.KeyCode.ButtonA then
+                    FlyUp = false
+                end
+                if input1.KeyCode == Enum.KeyCode.LeftShift or input1.KeyCode == Enum.KeyCode.ButtonL2 then
+                    FlyDown = false
+                end
+            end))
+            if inputService.TouchEnabled then
+                pcall(function()
+                    local jumpButton = lplr.PlayerGui.TouchGui.TouchControlFrame.JumpButton
+                    table.insert(Fly.Connections, jumpButton:GetPropertyChangedSignal("ImageRectOffset"):Connect(function()
+                        FlyUp = jumpButton.ImageRectOffset.X == 146
+                    end))
+                    FlyUp = jumpButton.ImageRectOffset.X == 146
+                end)
+            end
+            table.insert(Fly.Connections, vapeEvents.BalloonPopped.Event:Connect(function(poppedTable)
+                if poppedTable.inflatedBalloon and poppedTable.inflatedBalloon:GetAttribute("BalloonOwner") == lplr.UserId then
+                    lastonground = not onground
+                    repeat task.wait() until (lplr.Character:GetAttribute("InflatedBalloons") or 0) <= 0 or not Fly.Enabled
+                    inflateBalloon()
+                end
+            end))
+            table.insert(Fly.Connections, vapeEvents.AutoBankBalloon.Event:Connect(function()
+                repeat task.wait() until getItem("balloon")
+                inflateBalloon()
+            end))
+
+            local balloons
+            if entityLibrary.isAlive and (not store.queueType:find("mega")) then
+                balloons = inflateBalloon()
+            end
+            local megacheck = store.queueType:find("mega") or store.queueType == "winter_event"
+
+            task.spawn(function()
+                repeat task.wait() until store.queueType ~= "bedwars_test" or (not Fly.Enabled)
+                if not Fly.Enabled then return end
+                megacheck = store.queueType:find("mega") or store.queueType == "winter_event"
+            end)
+
+            local flyAllowed = entityLibrary.isAlive and ((lplr.Character:GetAttribute("InflatedBalloons") and lplr.Character:GetAttribute("InflatedBalloons") > 0) or store.matchState == 2 or megacheck) and 1 or 0
+            if flyAllowed <= 0 and shared.damageanim and (not balloons) then
+                shared.damageanim()
+                bedwars.SoundManager:playSound(bedwars.SoundList["DAMAGE_"..math.random(1, 3)])
+            end
+
+            if FlyAnywayProgressBarFrame and flyAllowed <= 0 and (not balloons) then
+                FlyAnywayProgressBarFrame.Visible = true
+                FlyAnywayProgressBarFrame.Frame:TweenSize(UDim2.new(1, 0, 0, 20), Enum.EasingDirection.InOut, Enum.EasingStyle.Linear, 0, true)
+            end
+
+            groundtime = tick() + (2.6 + (entityLibrary.groundTick - tick()))
+            FlyCoroutine = coroutine.create(function()
+                repeat
+                    repeat task.wait() until (groundtime - tick()) < 0.6 and not onground
+                    flyAllowed = ((lplr.Character and lplr.Character:GetAttribute("InflatedBalloons") and lplr.Character:GetAttribute("InflatedBalloons") > 0) or store.matchState == 2 or megacheck) and 1 or 0
+                    if (not Fly.Enabled) then break end
+                    local Flytppos = -99999
+                    if flyAllowed <= 0 and FlyTP.Enabled and entityLibrary.isAlive then
+                        local ray = workspace:Raycast(entityLibrary.character.HumanoidRootPart.Position, Vector3.new(0, -1000, 0), store.blockRaycast)
+                        if ray then
+                            Flytppos = entityLibrary.character.HumanoidRootPart.Position.Y
+                            local args = {entityLibrary.character.HumanoidRootPart.CFrame:GetComponents()}
+                            args[2] = ray.Position.Y + (entityLibrary.character.HumanoidRootPart.Size.Y / 2) + entityLibrary.character.Humanoid.HipHeight
+                            entityLibrary.character.HumanoidRootPart.CFrame = CFrame.new(unpack(args))
+                            task.wait(0.12)
+                            if (not Fly.Enabled) then break end
+                            flyAllowed = ((lplr.Character and lplr.Character:GetAttribute("InflatedBalloons") and lplr.Character:GetAttribute("InflatedBalloons") > 0) or store.matchState == 2 or megacheck) and 1 or 0
+                            if flyAllowed <= 0 and Flytppos ~= -99999 and entityLibrary.isAlive then
+                                local args = {entityLibrary.character.HumanoidRootPart.CFrame:GetComponents()}
+                                args[2] = Flytppos
+                                entityLibrary.character.HumanoidRootPart.CFrame = CFrame.new(unpack(args))
+                            end
+                        end
+                    end
+                until (not Fly.Enabled)
+            end)
+            coroutine.resume(FlyCoroutine)
+
+            RunLoops:BindToHeartbeat("Fly", function(delta)
+                if GuiLibrary.ObjectsThatCanBeSaved["Lobby CheckToggle"].Api.Enabled then
+                    if bedwars.matchState == 0 then return end
+                end
+                if entityLibrary.isAlive then
+                    local playerMass = (entityLibrary.character.HumanoidRootPart:GetMass() - 1.4) * (delta * 100)
+                    flyAllowed = ((lplr.Character:GetAttribute("InflatedBalloons") and lplr.Character:GetAttribute("InflatedBalloons") > 0) or store.matchState == 2 or megacheck) and 1 or 0
+                    playerMass = playerMass + (flyAllowed > 0 and 4 or 0) * (tick() % 0.4 < 0.2 and -1 or 1)
+
+                    if FlyAnywayProgressBarFrame then
+                        FlyAnywayProgressBarFrame.Visible = flyAllowed <= 0
+                        FlyAnywayProgressBarFrame.BackgroundColor3 = Color3.fromHSV(GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Hue, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Sat, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Value)
+                        FlyAnywayProgressBarFrame.Frame.BackgroundColor3 = Color3.fromHSV(GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Hue, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Sat, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Value)
+                    end
+
+                    if flyAllowed <= 0 then
+                        local newray = getPlacedBlock(entityLibrary.character.HumanoidRootPart.Position + Vector3.new(0, (entityLibrary.character.Humanoid.HipHeight * -2) - 1, 0))
+                        onground = newray and true or false
+                        if lastonground ~= onground then
+                            if (not onground) then
+                                groundtime = tick() + (2.6 + (entityLibrary.groundTick - tick()))
+                                if FlyAnywayProgressBarFrame then
+                                    FlyAnywayProgressBarFrame.Frame:TweenSize(UDim2.new(0, 0, 0, 20), Enum.EasingDirection.InOut, Enum.EasingStyle.Linear, groundtime - tick(), true)
+                                end
+                            else
+                                groundtime = tick()
+                                if FlyAnywayProgressBarFrame then
+                                    FlyAnywayProgressBarFrame.Frame:TweenSize(UDim2.new(1, 0, 0, 20), Enum.EasingDirection.InOut, Enum.EasingStyle.Linear, 0, true)
+                                end
+                            end
+                        end
+                        if (not onground) and (groundtime - tick()) <= 0 then
+                            if not FlyAnyway.Enabled then
+                                Fly.ToggleButton(false)
+                                return
+                            end
+                        end
+                    end
+                    lastonground = onground
+
+                    if (not FlyAnyway.Enabled) and flyAllowed <= 0 and (groundtime - tick()) <= 0 then
+                        Fly.ToggleButton(false)
+                        return
+                    end
+
+                    if entityLibrary.character.Humanoid.Sit then
+                        playerMass = playerMass + 0.6
+                    end
+                    local movevec = ((FlyMode.Value == "Normal" or FlyMode.Value == "AntiCheat B") and (not onground) and flyAllowed > 0 and not (entityLibrary.character.Humanoid.MoveDirection ~= Vector3.zero)) and (Vector3.zero) or (entityLibrary.character.Humanoid.MoveDirection)
+                    local newvelo = (Vector3.new(movevec.X * 40, ((FlyMode.Value == "AntiCheat A" and (not onground)) and (1.3 + playerMass) or (0)) + (FlyUp and FlyVerticalSpeed.Value or 0) + (FlyDown and -FlyVerticalSpeed.Value or 0), movevec.Z * 40)) * (FlyMode.Value == "AntiCheat B" and 1 or delta)
+                    local newpos = (entityLibrary.character.HumanoidRootPart.CFrame.Position) + (Vector3.new(movevec.X * 40, ((FlyMode.Value == "AntiCheat A" and (not onground)) and (1.3 + playerMass) or (0)) + (FlyUp and FlyVerticalSpeed.Value or 0) + (FlyDown and -FlyVerticalSpeed.Value or 0), movevec.Z * 40)) * delta
+                    if (FlyMode.Value == "CFrame") and (not onground) then
+                        local ray = workspace:Raycast(entityLibrary.character.HumanoidRootPart.Position, Vector3.new(0, -1000, 0), store.blockRaycast)
+                        if ray and ray.Position then
+                            newpos = Vector3.new(entityLibrary.character.HumanoidRootPart.CFrame.Position.X, math.clamp(entityLibrary.character.HumanoidRootPart.CFrame.Position.Y, ray.Position.Y + (entityLibrary.character.Humanoid.HipHeight + (entityLibrary.character.HumanoidRootPart.Size.Y / 2)), 999999999), entityLibrary.character.HumanoidRootPart.CFrame.Position.Z)
+                        end
+                    end
+                    if FlyMode.Value == "CFrame" then
+                        entityLibrary.character.HumanoidRootPart.CFrame = CFrame.new(newpos, newpos + entityLibrary.character.HumanoidRootPart.CFrame.LookVector)
+                    else
+                        entityLibrary.character.HumanoidRootPart.Velocity = newvelo
+                    end
+                    if FlyDamageAnimation.Enabled then
+                        entityLibrary.character.Humanoid:TakeDamage(1)
+                    end
+                    if FlyAutoPop.Enabled then
+                        local foundballoon = false
+                        for i,v in pairs(entityLibrary.character:GetChildren()) do
+                            if v.Name == "Balloon" then
+                                foundballoon = true
+                                break
+                            end
+                        end
+                        if foundballoon then
+                            for i,v in pairs(entityLibrary.character:GetChildren()) do
+                                if v.Name == "Balloon" then
+                                    v:Destroy()
+                                    break
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        else
+            bedwars.BalloonController.deflateBalloon = olddeflate
+            FlyUp = false
+            FlyDown = false
+            if FlyCoroutine then
+                coroutine.close(FlyCoroutine)
+            end
+            RunLoops:UnbindFromHeartbeat("Fly")
+            if FlyAnywayProgressBarFrame then
+                FlyAnywayProgressBarFrame:Destroy()
+                FlyAnywayProgressBarFrame = nil
+            end
+            if entityLibrary.isAlive then
+                local humanoid = entityLibrary.character:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid.WalkSpeed = 0
+                    humanoid.JumpPower = 0
+                    humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
+                    humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall, false)
+                    humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing, false)
+                    humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+                    humanoid:SetStateEnabled(Enum.HumanoidStateType.Flying, false)
+                    task.wait(3)
+                    humanoid.WalkSpeed = 16
+                    humanoid.JumpPower = 50
+                    humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
+                    humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall, true)
+                    humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing, true)
+                    humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
+                    humanoid:SetStateEnabled(Enum.HumanoidStateType.Flying, true)
+                end
+            end
+        end
+    end,
+    HoverText = "Float like a butterfly."
+})
+FlyMode = Fly.CreateDropdown({
+    Name = "Mode",
+    List = alternatelist,
+    Function = function(val)
+        if Fly.Enabled then
+            Fly.ToggleButton(false)
+            Fly.ToggleButton(false)
+        end
+    end
+})
+FlyVertical = Fly.CreateToggle({
+    Name = "Vertical",
+    Function = function() end,
+    Default = true
+})
+FlyVerticalSpeed = Fly.CreateSlider({
+    Name = "Vertical Speed",
+    Function = function() end,
+    Min = 0,
+    Max = 100,
+    Default = 40
+})
+FlyAutoPop = Fly.CreateToggle({
+    Name = "AutoBalloonPop",
+    Function = function() end
+})
+FlyTP = Fly.CreateToggle({
+    Name = "Fly TP",
+    Function = function() end
+})
+FlyDamageAnimation = Fly.CreateToggle({
+    Name = "Damage Animation",
+    Function = function() end
+})
+FlyAnyway = Fly.CreateToggle({
+    Name = "Fly Anyway",
+    Function = function() end
+})
+FlyAnywayProgressBar = Fly.CreateToggle({
+    Name = "Fly Anyway Progress Bar",
+    Function = function(callback)
+        if callback and (not FlyAnywayProgressBarFrame) then
+            FlyAnywayProgressBarFrame = Instance.new("Frame")
+            FlyAnywayProgressBarFrame.BackgroundColor3 = Color3.fromHSV(GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Hue, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Sat, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Value)
+            FlyAnywayProgressBarFrame.Size = UDim2.new(1, 0, 0, 20)
+            FlyAnywayProgressBarFrame.Position = UDim2.new(0, 0, 0, -30)
+            FlyAnywayProgressBarFrame.Visible = false
+            FlyAnywayProgressBarFrame.Parent = GuiLibrary.MainGui
+            local newFrame = Instance.new("Frame")
+            newFrame.BackgroundColor3 = Color3.fromHSV(GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Hue, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Sat, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Value)
+            newFrame.Size = UDim2.new(1, 0, 0, 20)
+            newFrame.Parent = FlyAnywayProgressBarFrame
+            local uicorner = Instance.new("UICorner")
+            uicorner.CornerRadius = UDim.new(0, 5)
+            uicorner.Parent = FlyAnywayProgressBarFrame
+            local uicorner2 = Instance.new("UICorner")
+            uicorner2.CornerRadius = UDim.new(0, 5)
+            uicorner2.Parent = newFrame
+        elseif (not callback) and FlyAnywayProgressBarFrame then
+            FlyAnywayProgressBarFrame:Destroy()
+            FlyAnywayProgressBarFrame = nil
+        end
+    end
+})
+																																																																																																
