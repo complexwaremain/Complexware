@@ -9162,7 +9162,7 @@ run(function()
 end)		
 
 run(function()
-	InfiniteJump = GuiLibrary.ObjectsThatCanBeSaved.ComplexwareWindow.Api.CreateOptionsButton({
+	InfiniteJump = GuiLibrary.ObjectsThatCanBeSaved.WorldWindow.Api.CreateOptionsButton({
 		Name = "InfiniteJump",
 		Function = function(callback)
 			if callback then
@@ -9179,114 +9179,10 @@ run(function()
 	end)         
 end)	
 
-
-runFunction(function()
-    AntiBan = GuiLibrary.ObjectsThatCanBeSaved.ComplexwareWindow.Api.CreateOptionsButton({
-        Name = "BetterAutoLeave",
-        Function = function(callback)
-            if callback then
-                repeat task.wait() until game:IsLoaded()
-                local groupId = 5774246
-                local roleId = 121
-                local function checkUserRole(player)
-                    if player:IsInGroup(groupId) and player:GetRankInGroup(groupId) == roleId then
-                        warningNotification("Complexware", "Staff found, Leaving the server.", 60)
-                        wait(2)
-                        bedwars.ClientHandler:Get("TeleportToLobby"):SendToServer()
-                    end
-                end
-                local function checkAllUsersRoles()
-                    for _, player in pairs(game.Players:GetPlayers()) do
-                        checkUserRole(player)
-                    end
-                end
-                checkAllUsersRoles()
-            end
-        end
-    })
-end)		
-
-													
-GuiLibrary.ObjectsThatCanBeSaved.ComplexwareWindow.Api.CreateOptionsButton({
-        Name = "BedTP",
-        Function = function(callback)
-            if callback then
-                lplr.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Dead)
-                lplr.CharacterAdded:Connect(function()
-                    wait(0.3) 
-                    tweenToNearestBed()
-                end)
-                hasTeleported = false
-                BedTp["ToggleButton"](false)
-            end
-        end,
-        ["HoverText"] = "Teleports you to the closest bed"
-    })
-end)
-																																																																																																						
-GuiLibrary.ObjectsThatCanBeSaved.ComplexwareWindow.Api.CreateOptionsButton({
-        Name = "PlayerTP",
-        Function = function(callback)
-            if callback then
-                lplr.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Dead)
-                lplr.CharacterAdded:Connect(function()
-                    wait(0.3)
-                    tweenToNearestPlayer()
-                end)
-                hasTeleported = false
-                PlayerTp["ToggleButton"](false)
-            end
-        end,
-        ["HoverText"] = "Teleports you to the closest player"
-    })
-end)
-
-runFunction(function()
-local Reinject = {["Enabled"] = false}
-        Reinject = GuiLibrary["ObjectsThatCanBeSaved"]["CombatWindow"]["Api"].CreateOptionsButton({
-            ["Name"] = "ReInject",
-            ["HoverText"] = "Reinjects Complexware",
-               ["Function"] = function(Callback)
-                    Enabled = Callback
-                    if Enabled then
-                      warningNotification("Complexware", "Reinjecting..", 3)
-                        Reinject["ToggleButton"](false)
-                        GuiLibrary["SelfDestruct"]()
-                        loadstring(game:HttpGet("https://raw.githubusercontent.com/complexwaremain/ComplexwareForVapeV4/main/NewMainScript.lua", true))()	
-
-local skidDetected = {}
-runFunction(function()
-    SkidDetector = GuiLibrary.ObjectsThatCanBeSaved.ComplexwareWindow.Api.CreateOptionsButton({
-        Name = "SkidDetector",
-        Function = function(callback)
-            if callback then
-                repeat task.wait() until game:IsLoaded()
-                local words = {
-                    "AetherClient"
-                    "Cocosploit"
-                    "Aurora"   
-                }
-
-                for i, v in pairs(game:GetService("Players"):GetChildren()) do
-                    v.Chatted:Connect(function(msg)
-                        for _, word in ipairs(words) do
-                            if string.find(string.lower(msg), string.lower(word)) and not skidDetected[v.Name] then
-                                skidDetected[v.Name] = true
-                                warningNotification("Complexware", v.Name.." is using skidded scripts, coudnt be me.", 100) 
-                                break
-                            end
-                        end
-                    end)
-                end
-            end
-        end
-    })
-end)
-
 run(function() -- credits to idk someone gave it to me
 	local MelodyExploit = {Enabled = false}
 
-	MelodyExploit = GuiLibrary.ObjectsThatCanBeSaved.ComplexwareWindow.Api.CreateOptionsButton({
+	MelodyExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = "AutoHeal",
 		Function = function(callback)
 			if callback then
