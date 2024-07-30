@@ -9177,30 +9177,4 @@ run(function()
 			hum:ChangeState("Jumping")
 		end
 	end)         
-end)	
-
-run(function() -- credits to idk someone gave it to me
-	local MelodyExploit = {Enabled = false}
-
-	MelodyExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-		Name = "AutoHeal",
-		Function = function(callback)
-			if callback then
-				RunLoops:BindToHeartbeat("melody",function()
-					if getItem("guitar") then
-						if lplr.Character.Humanoid.Health < lplr.Character.Humanoid.MaxHealth then
-							bedwars.Client:Get(bedwars.GuitarHealRemote):SendToServer({healTarget = lplr})
-							-- leaked since season 8 lol
-							--game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("StopPlayingGuitar"):FireServer()
-						else
-							game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("StopPlayingGuitar"):FireServer()
-						end
-					end
-				end)
-			else
-				RunLoops:UnbindFromHeartbeat("melody")
-			end
-		end
-	})
-end)
-				
+end)			
