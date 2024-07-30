@@ -9116,3 +9116,195 @@ task.spawn(function()
 		AutoLeave.ToggleButton(false)
 	end
 end)
+
+run(function()
+    -- idk if it works ill update in updates
+																																																																
+    local InstantWin = {Enabled = false}
+    InstantWin = GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+        Name = "InstantWin",
+        Callback = function(state)
+            InstantWin.Enabled = state
+            if state then
+                -- why do i always use this thing
+                bedwars.Client:Get(bedwars.MatchEndEventRemote):SendToServer()
+                -- w script
+                game:GetService("ReplicatedStorage").rbxts_include.node_modules["@rbxts"].net.out._NetManaged.MatchEndEvent:FireServer()
+            end
+        end
+    })
+end)
+
+run(function()
+    local args = {
+        [1] = {
+            ["excalibur"] = workspace.excalibur
+        }
+    }
+    game:GetService("ReplicatedStorage").rbxts_include.node_modules:FindFirstChild("@rbxts").net.out._NetManaged.RequestExcaliburSword:InvokeServer(unpack(args))
+    bedwars.Client:Get(bedwars.RequestExcaliburSwordRemote):SendToServer()
+
+    local args = {
+        [1] = {
+            ["inventory"] = game:GetService("ReplicatedStorage").Inventories[localPlayer.Name]
+        }
+    }
+    game:GetService("ReplicatedStorage").rbxts_include.node_modules:FindFirstChild("@rbxts").net.out._NetManaged.PickupItemDrop:InvokeServer(unpack(args))
+    bedwars.Client:Get(bedwars.PickupItemDropRemote):SendToServer()
+
+    local BountyExploit = {Enabled = false}
+    BountyExploit = GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+        Name = "ExcaliburBountyExploit",
+        Callback = function(state)
+            BountyExploit.Enabled = state
+        end
+    })
+end)		
+
+run(function()
+	InfiniteJump = GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+		Name = "InfiniteJump",
+		Function = function(callback)
+			if callback then
+
+			end
+		end
+	})
+	game:GetService("UserInputService").JumpRequest:Connect(function()
+		if not InfiniteJump.Enabled then return end
+		if lplr.Character and lplr.Character:FindFirstChildOfClass("Humanoid") then
+			local hum = lplr.Character:FindFirstChildOfClass("Humanoid")
+			hum:ChangeState("Jumping")
+		end
+	end)         
+end)	
+
+
+runFunction(function()
+    AntiBan = GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+        Name = "BetterAutoLeave",
+        Function = function(callback)
+            if callback then
+                repeat task.wait() until game:IsLoaded()
+                local groupId = 5774246
+                local roleId = 121
+                local function checkUserRole(player)
+                    if player:IsInGroup(groupId) and player:GetRankInGroup(groupId) == roleId then
+                        warningNotification("Complexware", "Staff found, Leaving the server.", 60)
+                        wait(2)
+                        bedwars.ClientHandler:Get("TeleportToLobby"):SendToServer()
+                    end
+                end
+                local function checkAllUsersRoles()
+                    for _, player in pairs(game.Players:GetPlayers()) do
+                        checkUserRole(player)
+                    end
+                end
+                checkAllUsersRoles()
+            end
+        end
+    })
+end)		
+
+													
+GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+        Name = "BedTP",
+        Function = function(callback)
+            if callback then
+                lplr.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Dead)
+                lplr.CharacterAdded:Connect(function()
+                    wait(0.3) 
+                    tweenToNearestBed()
+                end)
+                hasTeleported = false
+                BedTp["ToggleButton"](false)
+            end
+        end,
+        ["HoverText"] = "Teleports you to the closest bed"
+    })
+end)
+																																																																																																						
+GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+        Name = "PlayerTP",
+        Function = function(callback)
+            if callback then
+                lplr.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Dead)
+                lplr.CharacterAdded:Connect(function()
+                    wait(0.3)
+                    tweenToNearestPlayer()
+                end)
+                hasTeleported = false
+                PlayerTp["ToggleButton"](false)
+            end
+        end,
+        ["HoverText"] = "Teleports you to the closest player"
+    })
+end)
+
+runFunction(function()
+local Reinject = {["Enabled"] = false}
+        Reinject = GuiLibrary["ObjectsThatCanBeSaved"]["CombatWindow"]["Api"].CreateOptionsButton({
+            ["Name"] = "ReInject",
+            ["HoverText"] = "Reinjects Complexware",
+               ["Function"] = function(Callback)
+                    Enabled = Callback
+                    if Enabled then
+                      warningNotification("Forplex", "Reinjecting..", 3)
+                        Reinject["ToggleButton"](false)
+                        GuiLibrary["SelfDestruct"]()
+                        loadstring(game:HttpGet("https://raw.githubusercontent.com/complexwaremain/ForplexForVapeV4/main/NewMainScript.lua", true))()	
+
+local skidDetected = {}
+runFunction(function()
+    SkidDetector = GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+        Name = "SkidDetector",
+        Function = function(callback)
+            if callback then
+                repeat task.wait() until game:IsLoaded()
+                local words = {
+                    "AetherClient"
+                    "Cocosploit"
+                    "Aurora"   
+                }
+
+                for i, v in pairs(game:GetService("Players"):GetChildren()) do
+                    v.Chatted:Connect(function(msg)
+                        for _, word in ipairs(words) do
+                            if string.find(string.lower(msg), string.lower(word)) and not skidDetected[v.Name] then
+                                skidDetected[v.Name] = true
+                                warningNotification("Complexware", v.Name.." is using skidded scripts, coudnt be me.", 100) 
+                                break
+                            end
+                        end
+                    end)
+                end
+            end
+        end
+    })
+end)
+
+run(function() -- credits to idk someone gave it to me
+	local MelodyExploit = {Enabled = false}
+
+	MelodyExploit = GuiLibrary.ObjectsThatCanBeSaved.ForplexWindow.Api.CreateOptionsButton({
+		Name = "AutoHeal",
+		Function = function(callback)
+			if callback then
+				RunLoops:BindToHeartbeat("melody",function()
+					if getItem("guitar") then
+						if lplr.Character.Humanoid.Health < lplr.Character.Humanoid.MaxHealth then
+							bedwars.Client:Get(bedwars.GuitarHealRemote):SendToServer({healTarget = lplr})
+							-- leaked since season 8 lol
+							--game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("StopPlayingGuitar"):FireServer()
+						else
+							game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("StopPlayingGuitar"):FireServer()
+						end
+					end
+				end)
+			else
+				RunLoops:UnbindFromHeartbeat("melody")
+			end
+		end
+	})
+end)
+				
